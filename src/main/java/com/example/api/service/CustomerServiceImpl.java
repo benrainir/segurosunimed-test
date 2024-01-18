@@ -1,54 +1,74 @@
 package com.example.api.service;
 
 import java.util.Optional;
-
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.data.domain.Pageable;
+
+import com.example.api.domain.Address;
 import com.example.api.domain.Customer;
+import com.example.api.dto.CustomerDTO;
 import com.example.api.dto.CustomerFilterDTO;
 import com.example.api.exception.ResourceNotFoundException;
 import com.example.api.filter.CustomerSpecification;
 import com.example.api.repository.CustomerRepository;
 
+import mapper.CustomerMapper;
+
 @Service
 @Validated
 public class CustomerServiceImpl implements CustomerService {
 
-    @Autowired
-	private CustomerRepository repository;
+    private final CustomerRepository customerRepository;
+    private final CustomerMapper customerMapper;
 
 	
-	public CustomerServiceImpl(CustomerRepository repository) {
-		this.repository = repository;
-	}
+    @Autowired
+	public CustomerServiceImpl(CustomerRepository customerRepository, CustomerMapper customerMapper) {
+        this.customerRepository = customerRepository;
+        this.customerMapper = customerMapper;
+    }
 
 	public Page<Customer> findAll(CustomerFilterDTO filter, Pageable pageable) {
-        return repository.findAll(CustomerSpecification.filterBy(filter), pageable);
+        return customerRepository.findAll(CustomerSpecification.filterBy(filter), pageable);
     }
 
 	public Optional<Customer> findById(Long id) {
-		return repository.findById(id);
+		return customerRepository.findById(id);
 	}
 
-	public Customer createCustomer(Customer customer) {
-        return repository.save(customer);
+	public CustomerDTO createCustomer(CustomerDTO customerDTO) {
+        Customer customer = customerMapper.toEntity(customerDTO);
+        List<Address> addresses = customer.getAddresses();
+
+        // Garante que cada endereço esteja associado ao cliente
+        if (addresses != null) {
+            for (Address address : addresses) {
+                address.setCustomer(customer);
+            }
+        }
+
+        Customer savedCustomer = customerRepository.save(customer);
+        return customerMapper.toDTO(savedCustomer);
     }
 
-    public Customer updateCustomer(Long id, Customer updatedCustomer) {
-        if (repository.existsById(id)) {
-            updatedCustomer.setId(id);
-            return repository.save(updatedCustomer);
+    public CustomerDTO updateCustomer(Long id, CustomerDTO customerDTO) {
+        Customer customer = customerMapper.toEntity(customerDTO);
+        if (customerRepository.existsById(id)) {
+            customer.setId(id);
+            Customer savedCustomer = customerRepository.save(customer);
+            return customerMapper.toDTO(savedCustomer);
         } else {
             throw new ResourceNotFoundException("Customer not found with id: " + id);
         }
     }
 
     public void deleteCustomer(Long id) {
-        if (repository.existsById(id)) {
-            repository.deleteById(id);
+        if (customerRepository.existsById(id)) {
+            customerRepository.deleteById(id);
         } else {
             throw new ResourceNotFoundException("Customer not found with id: " + id);
         }

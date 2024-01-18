@@ -1,13 +1,11 @@
 package com.example.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.mapstruct.Mapper;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Data
+@Mapper
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AddressDTO {
 

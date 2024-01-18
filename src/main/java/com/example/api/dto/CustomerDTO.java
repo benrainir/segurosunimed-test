@@ -1,14 +1,14 @@
 package com.example.api.dto;
 
-import lombok.AllArgsConstructor;
+import java.util.List;
+import org.mapstruct.Mapper;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Data
+@Mapper
 public class CustomerDTO {
     private String name;
     private String email;
     private String gender;
+    private List<AddressDTO> addresses;
 }

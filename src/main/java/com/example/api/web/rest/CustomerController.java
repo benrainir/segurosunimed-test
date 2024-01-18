@@ -60,17 +60,15 @@ public class CustomerController {
 
 	// Endpoint para criar um novo cliente
     @PostMapping
-    public ResponseEntity<Customer> createCustomer(@RequestBody CustomerDTO customerDTO) {
-        Customer customer = CustomerMapper.INSTANCE.createCustomerDTOToCustomer(customerDTO);
-        Customer createdCustomer = customerService.createCustomer(customer);
+    public ResponseEntity<CustomerDTO> createCustomer(@RequestBody CustomerDTO customerDTO) {
+        CustomerDTO createdCustomer = customerService.createCustomer(customerDTO);
         return new ResponseEntity<>(createdCustomer, HttpStatus.CREATED);
     }
 
     // Endpoint para editar um cliente existente
     @PutMapping("/{id}")
-    public ResponseEntity<Customer> updateCustomer(@PathVariable Long id, @RequestBody CustomerDTO customerDTO) {
-        Customer customer = CustomerMapper.INSTANCE.createCustomerDTOToCustomer(customerDTO);
-        Customer updatedCustomer = customerService.updateCustomer(id, customer);
+    public ResponseEntity<CustomerDTO> updateCustomer(@PathVariable Long id, @RequestBody CustomerDTO customerDTO) {
+        CustomerDTO updatedCustomer = customerService.updateCustomer(id, customerDTO);
         return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
     }
 
