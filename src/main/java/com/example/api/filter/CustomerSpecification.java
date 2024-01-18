@@ -2,9 +2,12 @@ package com.example.api.filter;
 
 import org.springframework.data.jpa.domain.Specification;
 
+import com.example.api.domain.Address;
 import com.example.api.domain.Customer;
 import com.example.api.dto.CustomerFilterDTO;
 
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,12 +34,12 @@ public class CustomerSpecification {
             }
 
             if (filter.getCity() != null && !filter.getCity().isEmpty()) {
-                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("addresses").get("city")),
+                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.join("addresses").get("localidade")),
                         "%" + filter.getCity().toLowerCase() + "%"));
             }
 
             if (filter.getState() != null && !filter.getState().isEmpty()) {
-                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("addresses").get("state")),
+                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.join("addresses").get("uf")),
                         "%" + filter.getState().toLowerCase() + "%"));
             }
 
